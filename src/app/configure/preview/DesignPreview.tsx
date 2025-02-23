@@ -12,10 +12,18 @@ import Confetti from 'react-dom-confetti'
 import { createCheckoutSession } from './actions'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
+import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+import LoginModal from '@/components/LoginModal'
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
-    const router = useRouter()
+    const router = useRouter();
+
+    const { id } = configuration;
+    const { user } = useKindeBrowserClient();
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
     const { toast } = useToast();
-    const [showConfetti, setShowConfetti] = useState(false)
+
+    const [showConfetti, setShowConfetti] = useState<boolean>(false)
+
     useEffect(() => setShowConfetti(true))
     const { color, model, finish, material } = configuration;
     const tw = COLORS.find((supportedColor) => supportedColor.value === color)?.tw;
@@ -46,11 +54,23 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
             })
         }
     })
+    const handleCheckout = () => {
+        if (user) {
+            createPaymentSession({configId:id})
+        } else {
+            console.log("configurationId: ", id)
+            localStorage.setItem("configurationId", id);
+            setIsLoginModalOpen(true)
+        }
+    }
     return (
         <>
             <div aria-hidden='true' className="pointer-events-none select-none absolute inset-0 overflow-hidden flex justify-center">
                 <Confetti active={showConfetti} config={{ elementCount: 500, spread: 100 }} />
             </div>
+            <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen}/>
+
+           
             <div className='mt-20 grid grid-cols-1 text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-12'>
                 <div className='sm:col-span-4 md:col-span-3 md:row-span-2 md:row-end-2'>
                     <Phone imgSrc={configuration.croppedImageUrl!} className={cn(`bg-${tw}`)} />
@@ -122,7 +142,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
                             </div>
                         </div>
                         <div className='mt-8 flex justify-end pb-12'>
-                            <Button onClick={() => { createPaymentSession({ configId: configuration.id }) }} className='px-4 sm:px-6 lg:px-8'>
+                            <Button onClick={() => { handleCheckout() }} className='px-4 sm:px-6 lg:px-8'>
                                 Check Out <ArrowRight className='h-4 w-4 ml-1.5 inline' />
                             </Button>
                         </div>
