@@ -9,7 +9,12 @@ import { useMutation } from '@tanstack/react-query'
 import { ArrowRight, Check } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Confetti from 'react-dom-confetti'
+import { createCheckoutSession } from './actions'
+import { useRouter } from 'next/navigation'
+import { useToast } from '@/hooks/use-toast'
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
+    const router = useRouter()
+    const { toast } = useToast();
     const [showConfetti, setShowConfetti] = useState(false)
     useEffect(() => setShowConfetti(true))
     const { color, model, finish, material } = configuration;
@@ -23,7 +28,24 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     if (finish === 'textured') {
         totalPrice += PRODUCT_PRICES.finish.textured
     }
-    
+    const { mutate: createPaymentSession } = useMutation({
+        mutationKey: ["get-checkout-session"],
+        mutationFn: createCheckoutSession,
+        onSuccess: ({ url }) => {
+            if (url) {
+                router.push(url)
+            } else {
+                throw new Error("Enable to retrieve payment URL")
+            }
+        },
+        onError: () => {
+            toast({
+                title: 'Something went wrong',
+                description: "There was an error on our end. Please try again",
+                variant: 'destructive'
+            })
+        }
+    })
     return (
         <>
             <div aria-hidden='true' className="pointer-events-none select-none absolute inset-0 overflow-hidden flex justify-center">
@@ -60,7 +82,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
                             <ol className='mt-3 text-zinc-700 list-disc list-inside'>
                                 <li>High-quality, durable material</li>
                                 <li>Scratch and fingerprint resistant coating</li>
-                                
+
                             </ol>
                         </div>
                     </div>
@@ -70,45 +92,45 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
                                 <div className='flex items-center justify-between py-1 mt-2'>
                                     <p className='text-gray-600'>Base Price</p>
                                     <p className='font-medium text-gray-900'>
-                                        {formatPrice(BASE_PRICE/100)}
+                                        {formatPrice(BASE_PRICE / 100)}
                                     </p>
                                 </div>
-                                {finish === 'textured'?(
+                                {finish === 'textured' ? (
                                     <div className="flex items-center justify-between py-1 mt-2">
                                         <p className="text-gray-600">Textured Finish</p>
                                         <p className="font-medium text-gray-900">
-                                            {formatPrice(PRODUCT_PRICES.finish.textured/100)}
+                                            {formatPrice(PRODUCT_PRICES.finish.textured / 100)}
                                         </p>
                                     </div>
-                                ):null}
-                                {material === 'polycarbonate'?(
+                                ) : null}
+                                {material === 'polycarbonate' ? (
                                     <div className="flex items-center justify-between py-1 mt-2">
                                         <p className="text-gray-600">Polycarbonate Material</p>
                                         <p className="font-medium text-gray-900">
-                                            {formatPrice(PRODUCT_PRICES.material.polycarbonate/100)}
+                                            {formatPrice(PRODUCT_PRICES.material.polycarbonate / 100)}
                                         </p>
                                     </div>
-                                ):null}
+                                ) : null}
 
-                                <div className='my-2 h-px bg-gray-200'/>
+                                <div className='my-2 h-px bg-gray-200' />
                                 <div className='flex items-center justify-between py-2'>
                                     <p className="font-semibold text-gray-900">Order total</p>
                                     <p className='font-semibold text-gray-900'>
-                                        {formatPrice(totalPrice/100)}
+                                        {formatPrice(totalPrice / 100)}
                                     </p>
                                 </div>
                             </div>
                         </div>
                         <div className='mt-8 flex justify-end pb-12'>
-                            <Button className='px-4 sm:px-6 lg:px-8'>
-                                Check Out <ArrowRight className='h-4 w-4 ml-1.5 inline'/>
+                            <Button onClick={() => { createPaymentSession({ configId: configuration.id }) }} className='px-4 sm:px-6 lg:px-8'>
+                                Check Out <ArrowRight className='h-4 w-4 ml-1.5 inline' />
                             </Button>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     )
 }
-
+// 7:27:00
 export default DesignPreview
