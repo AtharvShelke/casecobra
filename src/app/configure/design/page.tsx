@@ -7,19 +7,29 @@ interface PageProps {
 }
 
 const Page = async ({ searchParams }: PageProps) => {
-  const params = await searchParams; 
-  const id = params?.id;
-  if (!id || typeof id!=="string") {
+  const id = searchParams?.id; // No need to await searchParams
+
+  if (!id || typeof id !== "string") {
     return notFound();
   }
+
   const configuration = await db.configuration.findUnique({
-    where:{id},
-  })
-  if (!configuration){
+    where: { id },
+  });
+
+  if (!configuration) {
     return notFound();
   }
-  const {imageUrl, width, height} = configuration;
-  return <DesignConfigurator configId={configuration.id} imageDimensions={{width,height}} imageUrl={imageUrl}/>;
+
+  const { imageUrl, width, height } = configuration;
+
+  return (
+    <DesignConfigurator
+      configId={configuration.id}
+      imageDimensions={{ width, height }}
+      imageUrl={imageUrl}
+    />
+  );
 };
 
 export default Page;
