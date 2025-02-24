@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import Dropzone, { FileRejection } from "react-dropzone";
 
-const page = () => {
+const Page = () => {
     const {toast} = useToast();
     const router = useRouter();
     const {startUpload, isUploading} = useUploadThing("imageUploader",{
@@ -25,7 +25,7 @@ const page = () => {
     });
     const [isDragOver, setIsDragOver] = useState<boolean>(false);
     const onDropRejected = (rejectedFiles: FileRejection[]) => {
-        const {file} = rejectedFiles;
+        const [file] = rejectedFiles;
         setIsDragOver(false)
         toast({
             title:`${file.file.type} type is not supported`,
@@ -103,4 +103,4 @@ const page = () => {
     )
 }
 
-export default page
+export default Page;

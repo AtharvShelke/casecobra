@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { base64ToBlob, cn, formatPrice } from "@/lib/utils";
 import NextImage from "next/image";
 import { Rnd } from 'react-rnd';
-import { Description, Field, Radio, RadioGroup } from "@headlessui/react";
+import { Field, Radio, RadioGroup } from "@headlessui/react";
 import { useRef, useState } from "react";
 import { COLORS, FINISHES, MATERIALS, MODELS } from "@/validators/option-validator";
 import { Label } from "@/components/ui/label";
@@ -108,6 +108,7 @@ const DesignConfigurator = ({ configId, imageUrl, imageDimensions }: DesignConfi
         description:"There was a problem saving your config, please try again.",
         variant:'destructive'
       })
+      console.error(error);
     }
   }
 

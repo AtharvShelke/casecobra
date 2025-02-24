@@ -4,7 +4,6 @@ import Phone from "@/components/Phone";
 import { Reviews } from "@/components/Reviews";
 import { buttonVariants } from "@/components/ui/button";
 import { ArrowRight, Check, Star } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
