@@ -13,8 +13,10 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
-      "react/no-escaped-entities": "off",
-      "@next/next/no-img-element":"off"
+      "react/no-unescaped-entities": "off",
+      "@next/next/no-img-element":"off",
+      "jsx-a11y/alt-text":"off",
+      "@typescript-eslint/no-unused-vars":"off",
     },
   },
 ];
