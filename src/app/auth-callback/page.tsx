@@ -28,9 +28,9 @@ const Page = () => {
     if (data?.success) {
       if (configId) {
         localStorage.removeItem("configurationId");
-        router.push(`/configure/preview?id=${configId}`);
+        router.push(`${process.env.NEXT_PUBLIC_BASE_URL}/configure/preview?id=${configId}`);
       } else {
-        router.push("/");
+        router.push(`${process.env.NEXT_PUBLIC_BASE_URL}/`);
       }
     }
   }, [data, configId, router]); // Depend on data & configId
