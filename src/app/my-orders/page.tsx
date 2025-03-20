@@ -11,11 +11,25 @@ import { COLORS } from "@/validators/option-validator";
 const Page = async () => {
     const { getUser } = getKindeServerSession();
     const userData = await getUser();
+
+    if (!userData || !userData.id) {
+        console.error("User not found or not authenticated.");
+        return (
+            <div className="flex flex-col items-center justify-center h-64">
+                <p className="text-gray-400 text-lg">User not authenticated.</p>
+            </div>
+        );
+    }
+
     const orders = await db.dummyOrder.findMany({
         where: { userId: userData.id },
         orderBy: { createdAt: "desc" },
         include: { user: true, configuration: true },
     });
+
+    if (!orders || orders.length === 0) {
+        console.warn("No orders found for user:", userData.id);
+    }
 
     return (
         <div className="container mx-auto p-6">
@@ -24,7 +38,14 @@ const Page = async () => {
             {orders.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {orders.map((order) => {
-                        const twColor = COLORS.find((c) => c.value === order.configuration.color)?.tw || "bg-gray-200";
+                        if (!order.configuration) {
+                            console.error("Order has no configuration:", order);
+                            return null;
+                        }
+
+                        const twColor =
+                            COLORS.find((c) => c.value === order.configuration.color)?.tw || "bg-gray-200";
+
                         return (
                             <Card key={order.id} className="shadow-lg transition-transform transform hover:scale-105">
                                 <CardHeader>
@@ -34,7 +55,10 @@ const Page = async () => {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="flex items-center gap-4">
-                                        <Phone imgSrc={order.configuration.imageUrl} className={cn(twColor, "w-24")} />
+                                        <Phone
+                                            imgSrc={order.configuration.imageUrl}
+                                            className={cn(twColor, "w-24")}
+                                        />
                                         <div className="space-y-1">
                                             <p className="text-gray-700 text-sm flex items-center gap-1">
                                                 <Package className="w-4 h-4 text-gray-500" />
