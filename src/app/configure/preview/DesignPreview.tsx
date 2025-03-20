@@ -14,7 +14,17 @@ import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import LoginModal from '@/components/LoginModal'
-const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
+
+interface DesignPreviewProps {
+    configuration: Configuration;
+    data: {
+      configurationId: string;
+      userId: string;
+      amount: number;
+    };
+  }
+  
+const DesignPreview = ({ configuration, data }: DesignPreviewProps) => {
     const router = useRouter();
 
     const { id } = configuration;
@@ -63,6 +73,40 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
             setIsLoginModalOpen(true)
         }
     }
+    const handleDummyCheckout = async (data: DesignPreviewProps['data']) => {
+        if (user) {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/dummyOrder`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+    
+                if (!response.ok) {
+                    throw new Error(`Failed to process order: ${response.statusText}`);
+                }
+    
+                const result = await response.json();
+                console.log("Order response:", result);
+    
+                router.push(`/payment-page?id=${data.configurationId}`);
+            } catch (error) {
+                console.error("Error during checkout:", error);
+                toast({
+                    title: "Checkout Failed",
+                    description: "An error occurred while processing your order. Please try again.",
+                    variant: "destructive",
+                });
+            }
+        } else {
+            console.log("configurationId: ", data.configurationId);
+            localStorage.setItem("configurationId", data.configurationId);
+            setIsLoginModalOpen(true);
+        }
+    };
+    
     return (
         <>
             <div aria-hidden='true' className="pointer-events-none select-none absolute inset-0 overflow-hidden flex justify-center">
@@ -142,7 +186,8 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
                             </div>
                         </div>
                         <div className='mt-8 flex justify-end pb-12'>
-                            <Button onClick={() => { handleCheckout() }} className='px-4 sm:px-6 lg:px-8'>
+                            
+                            <Button onClick={() => { handleDummyCheckout(data) }} className='px-4 sm:px-6 lg:px-8'>
                                 Check Out <ArrowRight className='h-4 w-4 ml-1.5 inline' />
                             </Button>
                         </div>

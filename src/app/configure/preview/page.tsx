@@ -1,6 +1,10 @@
 import { db } from '@/db'
 import { notFound } from 'next/navigation'
 import DesignPreview from './DesignPreview'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { BASE_PRICE, PRODUCT_PRICES } from '@/config/products'
+import { Button } from '@/components/ui/button'
+import { ArrowRight } from 'lucide-react'
 
 interface PageProps {
   searchParams: {
@@ -9,6 +13,9 @@ interface PageProps {
 }
 
 const Page = async ({ searchParams }: PageProps) => {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+  const userId = user.id;
   const { id } = searchParams
 
   if (!id || typeof id !== 'string') {
@@ -19,11 +26,33 @@ const Page = async ({ searchParams }: PageProps) => {
     where: { id },
   })
 
-  if(!configuration) {
+  if (!configuration) {
     return notFound()
   }
 
-  return <DesignPreview configuration={configuration} />
+  let totalPrice = BASE_PRICE
+  if (configuration.material === 'polycarbonate') {
+    totalPrice += PRODUCT_PRICES.material.polycarbonate
+  }
+  if (configuration.finish === 'textured') {
+    totalPrice += PRODUCT_PRICES.finish.textured
+  }
+ 
+  const data = {
+    configurationId:configuration.id,
+    userId,
+    amount:totalPrice
+  }
+  
+  return (
+    <>
+      <div>
+        <DesignPreview configuration={configuration} data={data}/>
+        
+      </div>
+    </>
+  )
+
 }
 
 export default Page

@@ -49,14 +49,16 @@ model Configuration {
   finish          CaseFinish?
   color           CaseColor?
   Order           Order[]
+  DummyOrder      DummyOrder[]
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String
-  order     Order[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String       @id @default(cuid())
+  email      String
+  order      Order[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  DummyOrder DummyOrder[]
 }
 
 model Order {
@@ -65,9 +67,9 @@ model Order {
   configuration     Configuration    @relation(fields: [configurationId], references: [id])
   user              User             @relation(fields: [userId], references: [id])
   userId            String
-  amount             Float
+  amount            Float
   isPaid            Boolean          @default(false)
-  status            OrderStatus       @default(awaiting_shipment)
+  status            OrderStatus      @default(awaiting_shipment)
   shippingAddress   ShippingAddress? @relation(fields: [shippingAddressId], references: [id])
   shippingAddressId String?
   billingAddress    BillingAddress?  @relation(fields: [billingAddressId], references: [id])
@@ -98,4 +100,15 @@ model BillingAddress {
   state       String?
   phoneNumber String?
   orders      Order[]
+}
+
+model DummyOrder {
+  id              String        @id @default(cuid())
+  configurationId String
+  configuration   Configuration @relation(fields: [configurationId], references: [id])
+  user            User          @relation(fields: [userId], references: [id])
+  userId          String         
+  amount          Float
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
