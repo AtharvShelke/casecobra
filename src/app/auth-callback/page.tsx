@@ -26,6 +26,7 @@ const Page = () => {
 
   useEffect(() => {
     if (data?.success) {
+      console.log(data)
       if (configId) {
         localStorage.removeItem("configurationId");
         router.push(`/configure/preview?id=${configId}`);
