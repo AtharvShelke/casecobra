@@ -3,7 +3,6 @@ import { BASE_PRICE, PRODUCT_PRICES } from "@/config/products";
 import { db } from "@/db";
 import { cn, formatPrice } from "@/lib/utils";
 import { COLORS } from "@/validators/option-validator";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { notFound } from "next/navigation";
 
 interface PageProps {

@@ -20,7 +20,7 @@ const Footer = () => {
                     </div>
                 </div>
                 <div className="text-center md:text-left py-2 md:py-0">
-                <Link href="#" className="text-sm text-muted-foreground hover:text-gray-600">~ Atharv Shelke</Link>
+                <Link href="https://atharv-portfolio-ivory.vercel.app" className="text-sm text-muted-foreground hover:text-gray-600">~ Atharv Shelke</Link>
                 </div>
             </div>
         </MaxWidthWrapper>
