@@ -4,6 +4,12 @@ const nextConfig = {
   images: {
     domains: ['utfs.io']
   },
+
+  experimental: {
+    appDir: true, // ✅ Required for App Router
+  },
+
+
 };
 
 module.exports = nextConfig;
