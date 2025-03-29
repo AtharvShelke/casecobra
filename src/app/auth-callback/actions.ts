@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "@/lib/authOptions";
 import { User } from "next-auth";
 
 interface ExtendedUser extends User {

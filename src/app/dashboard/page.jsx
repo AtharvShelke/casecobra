@@ -1,20 +1,18 @@
 import { db } from "@/db";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { Calendar, Package } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn, formatPrice } from "@/lib/utils";
 import Phone from "@/components/Phone";
 import { COLORS } from "@/validators/option-validator";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions"; // Ensure this is correctly set up
 
 const Dashboard = async () => {
-    const { getUser } = getKindeServerSession();
-    const user = await getUser();
+    const session = await getServerSession(authOptions);
 
-    const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
-    if (!user?.email || user.email !== ADMIN_EMAIL) {
+    if (!session?.user?.email) {
         return notFound();
     }
 

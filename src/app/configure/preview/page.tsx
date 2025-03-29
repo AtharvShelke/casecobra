@@ -1,28 +1,23 @@
-import { db } from '@/db'
-import { notFound } from 'next/navigation'
-import DesignPreview from './DesignPreview'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { BASE_PRICE, PRODUCT_PRICES } from '@/config/products'
+import { db } from "@/db";
+import { notFound } from "next/navigation";
+import DesignPreview from "./DesignPreview";
+import { BASE_PRICE, PRODUCT_PRICES } from "@/config/products";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
+import AuthRedirect from "@/components/AuthRedirect";
+
 
 interface PageProps {
   searchParams: {
-    [key: string]: string | string[] | undefined
-  }
+    [key: string]: string | string[] | undefined;
+  };
 }
 
 const Page = async ({ searchParams }: PageProps) => {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+  const session = await getServerSession(authOptions);
 
-  if (!user || !user.id) {
-    console.error("User not found or not authenticated.");
-    return notFound();
-  }
-
-  const userId = user.id;
-  const { id } = searchParams;
-
-  if (!id || typeof id !== 'string') {
+  const id = Array.isArray(searchParams.id) ? searchParams.id[0] : searchParams.id;
+  if (!id || typeof id !== "string") {
     console.error("Invalid or missing configuration ID:", id);
     return notFound();
   }
@@ -36,11 +31,16 @@ const Page = async ({ searchParams }: PageProps) => {
     return notFound();
   }
 
+  if (!session?.user || !session.user.id) {
+    return <AuthRedirect configurationId={configuration.id} />;
+  }
+
+  const userId = session.user.id;
   let totalPrice = BASE_PRICE;
-  if (configuration.material === 'polycarbonate') {
+  if (configuration.material === "polycarbonate") {
     totalPrice += PRODUCT_PRICES.material.polycarbonate;
   }
-  if (configuration.finish === 'textured') {
+  if (configuration.finish === "textured") {
     totalPrice += PRODUCT_PRICES.finish.textured;
   }
 

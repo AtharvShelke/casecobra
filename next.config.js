@@ -5,9 +5,7 @@ const nextConfig = {
     domains: ['utfs.io']
   },
 
-  experimental: {
-    appDir: true, // ✅ Required for App Router
-  },
+  
 
 
 };

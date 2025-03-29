@@ -1,8 +1,9 @@
 import type { Dispatch, SetStateAction } from "react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog"
 import Image from "next/image"
-import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs"
+// import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs"
 import { buttonVariants } from "./ui/button"
+import Link from "next/link"
 
 const LoginModal = ({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: Dispatch<SetStateAction<boolean>> }) => {
     return (
@@ -21,12 +22,12 @@ const LoginModal = ({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: Dispatc
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid grid-cols-2 gap-6 divide-x divide-gray-200">
-                    <LoginLink className={buttonVariants({ variant: 'outline' })}>
+                    <Link href={'/auth'} className={buttonVariants({ variant: 'outline' })}>
                         Login
-                    </LoginLink>
-                    <RegisterLink className={buttonVariants({variant:'default'})}>
+                    </Link>
+                    <Link href={'/auth'} className={buttonVariants({variant:'default'})}>
                         Sign Up
-                    </RegisterLink>
+                    </Link>
                 </div>
             </DialogContent>
         </Dialog>
