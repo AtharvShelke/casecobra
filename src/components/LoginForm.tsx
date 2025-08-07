@@ -9,10 +9,12 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); 
+    e.preventDefault();
+    setError(""); // Clear previous errors
 
     try {
       setLoading(true);
@@ -27,12 +29,15 @@ const LoginPage = () => {
 
       if (loginData?.error) {
         console.error("Login error:", loginData.error);
+        setError("Invalid email or password. Please try again.");
         setLoading(false);
-        return; // Exit the function on error
+        return;
       }
 
       if (loginData?.ok) {
-        setLoading(false);
+        // Give NextAuth time to establish session
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         const configurationId = localStorage.getItem("configurationId");
 
         if (configurationId) {
@@ -42,9 +47,12 @@ const LoginPage = () => {
           console.log("No Configuration ID found, redirecting...");
           router.push("/");
         }
+        
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error in onSubmit:", error);
+      setError("An unexpected error occurred. Please try again.");
       setLoading(false);
     }
   };
@@ -56,6 +64,12 @@ const LoginPage = () => {
       </h2>
 
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        {error && (
+          <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
+            {error}
+          </div>
+        )}
+        
         <input
           type="email"
           name="email"
@@ -64,6 +78,7 @@ const LoginPage = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          disabled={loading}
         />
 
         <input
@@ -74,11 +89,12 @@ const LoginPage = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          disabled={loading}
         />
 
         <a
           href="#"
-          className="text-gray-600 text-sm hover:text-gray-200 self-end"
+          className="text-gray-600 text-sm hover:text-gray-800 self-end"
         >
           Forgot Password?
         </a>

@@ -2,11 +2,9 @@ import { db } from '@/db';
 import { hash } from 'bcrypt';
 import { NextResponse } from 'next/server';
 
-export async function POST(request:Request) {
+export async function POST(request: Request) {
     try {
         const { name, email, password } = await request.json();
-
-        
 
         // Check if the user already exists
         const existingUser = await db.user.findUnique({
@@ -14,7 +12,10 @@ export async function POST(request:Request) {
         });
 
         if (existingUser) {
-            return NextResponse.json({ message: "User with this email already exists." }, { status: 409 });
+            return NextResponse.json(
+                { message: "User with this email already exists." }, 
+                { status: 409 }
+            );
         }
 
         // Hash the password
@@ -42,25 +43,26 @@ export async function POST(request:Request) {
         );
     }
 }
-export const GET = async(request:Request) => {
+
+export const GET = async (request: Request) => {
     try {
-        const user = await db.user.findMany({
-            orderBy:{
-                createdAt:'desc' //latest user
+        const users = await db.user.findMany({
+            orderBy: {
+                createdAt: 'desc' // Latest user first
             },
-            
         });
        
-        return NextResponse.json(user);
+        return NextResponse.json(users);
     } catch (error) {
-        console.log(error)
-        return NextResponse.json({
-            error,
-            message:"Failed to fetch the user"
-
-        },{
-            status:500
-        }
-    )
+        console.error("Error fetching users:", error);
+        return NextResponse.json(
+            {
+                error: error,
+                message: "Failed to fetch the users"
+            },
+            {
+                status: 500
+            }
+        );
     }
-}
+};
