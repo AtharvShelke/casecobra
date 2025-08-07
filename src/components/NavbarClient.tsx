@@ -1,4 +1,4 @@
-"use client";
+
 
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
@@ -16,9 +16,7 @@ interface NavbarClientProps {
 
 const NavbarClient: React.FC<NavbarClientProps> = ({ user, isAdmin }) => {
     const router = useRouter();
-    useEffect(() => {
-        router.refresh();
-    }, [user]);
+    
     return (
         <nav className="sticky z-[100] h-14 inset-x-0 top-0 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all">
             <div className="flex h-14 items-center justify-between border-b border-zinc-200 max-w-7xl mx-auto px-4">

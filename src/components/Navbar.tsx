@@ -1,15 +1,17 @@
-import Link from "next/link";
-import MaxWidthWrapper from "./MaxWidthWrapper";
-import { buttonVariants } from "./ui/button";
-import { ArrowRight } from "lucide-react";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/authOptions";
+'use client';
+
+import { useSession } from "next-auth/react";
 import NavbarClient from "./NavbarClient";
 
-const Navbar = async () => {
-    const session = await getServerSession(authOptions);
+const Navbar = () => {
+    const { data: session, status } = useSession();
     const user = session?.user;
-    const isAdmin = session?.user?.role === "ADMIN"; // Ensure this variable is set in .env
+    const isAdmin = session?.user?.role === "ADMIN";
+
+    // Show loading state while session is being fetched
+    if (status === "loading") {
+        return <div>Loading...</div>;
+    }
 
     return <NavbarClient user={user} isAdmin={isAdmin} />;
 };
